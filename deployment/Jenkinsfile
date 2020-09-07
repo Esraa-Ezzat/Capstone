@@ -5,7 +5,7 @@ pipeline {
 		stage('Lint HTML') {
 			steps {
 				sh '''
-				pwd
+				cd deployment
 				tidy -q -e index.html
 				'''
 			      }
