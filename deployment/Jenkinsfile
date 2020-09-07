@@ -4,17 +4,21 @@ pipeline {
 
 		stage('Lint HTML') {
 			steps {
-				sh 'tidy -q -e *.html'
-			}
+				sh '''
+				cd deployment
+				tidy -q -e index.html
+				'''
+			      }
 		}
 		
 		stage('Build Docker Image') {
 			steps {
 				withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]){
 					sh '''
+						cd deployment
 						docker build -t esraaezzat/capstone .
 					'''
-				}
+			      }
 			}
 		}
 
@@ -22,6 +26,7 @@ pipeline {
 			steps {
 				withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]){
 					sh '''
+						cd deployment
 						docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 						docker push esraaezzat/capstone
 					'''
@@ -33,7 +38,7 @@ pipeline {
 			steps {
 				withAWS(region:'us-east-1', credentials:'aws-static') {
 					sh '''
-						kubectl config use-context arn:aws:eks:us-east-1:257419628480:cluster/capstonecluster
+						kubectl config use-context arn:aws:eks:us-east-1:564037957374:cluster/capstonecluster
 					'''
 				}
 			}
@@ -43,7 +48,7 @@ pipeline {
 			steps {
 				withAWS(region:'us-east-1', credentials:'aws-static') {
 					sh '''
-						kubectl apply -f ./blue-controller.json
+						kubectl apply -f ./deployment/blue-controller.json
 					'''
 				}
 			}
@@ -53,7 +58,7 @@ pipeline {
 			steps {
 				withAWS(region:'us-east-1', credentials:'aws-static') {
 					sh '''
-						kubectl apply -f ./green-controller.json
+						kubectl apply -f ./deployment/green-controller.json
 					'''
 				}
 			}
@@ -63,7 +68,7 @@ pipeline {
 			steps {
 				withAWS(region:'us-east-1', credentials:'aws-static') {
 					sh '''
-						kubectl apply -f ./blue-service.json
+						kubectl apply -f ./deployment/blue-service.json
 					'''
 				}
 			}
@@ -79,7 +84,7 @@ pipeline {
 			steps {
 				withAWS(region:'us-east-1', credentials:'aws-static') {
 					sh '''
-						kubectl apply -f ./green-service.json
+						kubectl apply -f ./deployment/green-service.json
 					'''
 				}
 			}
