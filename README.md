@@ -13,3 +13,4 @@ Building Docker containers in pipelines
               authenticate into aws ---------> create the kubernetes cluster -------> create a configuration file for the cluster
         pipeline 2 : ( containers deployment)
                Linting HTML -----> build the Docker image ------> upload image to docker -----> set current kubectl to the cluster ----> create a replication controller blue pod ------> create a replication controller green pod -----> create the service in kubernetes cluster ----> wait until the user approved ---> update the service to redirect to green 
+git hub link : https://github.com/Esraa-Ezzat/Capstone
